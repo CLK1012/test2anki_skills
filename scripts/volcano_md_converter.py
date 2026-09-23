@@ -27,12 +27,20 @@ import requests
 from PIL import Image
 
 # ---------------------------------------------------------------------------
-# 常量
+# 配置与常量导入 (优先读取本地忽略的 config.py，回退到环境变量)
 # ---------------------------------------------------------------------------
-API_BASE = "https://ark.cn-beijing.volces.com/api/v3"
-API_KEY = os.environ.get("VOLCENGINE_API_KEY", "")
-MODEL = "doubao-seed-2-0-lite-260428"
-MAX_IMAGE_MB = 10  # 火山 Ark API 单张图片上限
+try:
+    from . import config
+except (ImportError, ValueError):
+    try:
+        import config
+    except ImportError:
+        config = None
+
+API_BASE = getattr(config, "VOLCENGINE_API_BASE", "https://ark.cn-beijing.volces.com/api/v3")
+API_KEY = getattr(config, "VOLCENGINE_API_KEY", None) or os.environ.get("VOLCENGINE_API_KEY", "")
+MODEL = getattr(config, "VOLCENGINE_MODEL", "doubao-seed-2-0-lite-260428")
+MAX_IMAGE_MB = getattr(config, "MAX_IMAGE_MB", 10)  # 火山 Ark API 单张图片上限
 SYSTEM_PROMPT = """你是一个专业的试卷数字化助手。请按照以下规则将图片中的试卷内容转化为markdown格式：
 
 1. 对于多栏排版的试卷，按照从左到右逐栏阅读，每一栏内部从上到下阅读的顺序处理。

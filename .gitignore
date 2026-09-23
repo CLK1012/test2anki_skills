@@ -11,3 +11,7 @@ output.md
 *_pages/
 .DS_Store
 Thumbs.db
+
+# 核心安全忽略规则：私有 API 配置文件
+scripts/config.py
+config.py
